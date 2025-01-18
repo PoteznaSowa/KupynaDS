@@ -1,4 +1,4 @@
-#include "byte_array_internal.h"
+п»ї#include "byte_array_internal.h"
 #include "cryptonite_errors.h"
 #include "dstu4145.h"
 #include "dstu7564.h"
@@ -16,7 +16,7 @@ ByteArray* CalculateHash(uint8_t* buf, size_t size) {
 	ByteArray* r = NULL;
 
 	ctx = dstu7564_alloc(DSTU7564_SBOX_1);
-	dstu7564_init(ctx, 64);	// Купина-512
+	dstu7564_init(ctx, 64);	// РљСѓРїРёРЅР°-512
 
 	int dummy;
 	ByteArray block = {
@@ -60,7 +60,7 @@ DWORD FileHash(FileHashWork* fhw) {
 	LARGE_INTEGER fsize;
 	GetFileSizeEx(f, &fsize);
 
-	// Відобразити файл у пам’ять.
+	// Р’С–РґРѕР±СЂР°Р·РёС‚Рё С„Р°Р№Р» Сѓ РїР°РјвЂ™СЏС‚СЊ.
 	fmap = CreateFileMappingW(f, NULL, PAGE_READONLY, 0, 0, NULL);
 	if (!fmap) {
 		ret = GetLastError();
@@ -152,7 +152,7 @@ int SignFile(wchar_t* file, wchar_t* skfile) {
 	DWORD r;
 	uint8_t _keysize;
 
-	// Обчислення гешу можна виконувати окремим потоком.
+	// РћР±С‡РёСЃР»РµРЅРЅСЏ РіРµС€Сѓ РјРѕР¶РЅР° РІРёРєРѕРЅСѓРІР°С‚Рё РѕРєСЂРµРјРёРј РїРѕС‚РѕРєРѕРј.
 	FileHashWork fhw;
 	fhw.path = file;
 	fhw.ba = NULL;
@@ -243,7 +243,7 @@ int SignFile(wchar_t* file, wchar_t* skfile) {
 	WriteFile(f, &_keysize, sizeof(_keysize), &r, NULL);
 	WriteFile(f, ba_get_buf(sign_s), ba_get_len(sign_s), &r, NULL);
 
-	// Записати відкритий ключ
+	// Р—Р°РїРёСЃР°С‚Рё РІС–РґРєСЂРёС‚РёР№ РєР»СЋС‡
 	_keysize = ba_get_len(pk);
 	WriteFile(f, &_keysize, sizeof(_keysize), &r, NULL);
 	WriteFile(f, ba_get_buf(pk), ba_get_len(pk), &r, NULL);
@@ -283,7 +283,7 @@ int VerifyFile(wchar_t* file) {
 	ByteArray pk;
 	DWORD r;
 
-	// Обчислення гешу можна виконувати окремим потоком.
+	// РћР±С‡РёСЃР»РµРЅРЅСЏ РіРµС€Сѓ РјРѕР¶РЅР° РІРёРєРѕРЅСѓРІР°С‚Рё РѕРєСЂРµРјРёРј РїРѕС‚РѕРєРѕРј.
 	FileHashWork fhw;
 	fhw.path = file;
 	fhw.ba = NULL;
@@ -319,7 +319,7 @@ int VerifyFile(wchar_t* file) {
 		goto exit;
 	}
 
-	// Відобразити підпис і відкритий ключ у пам’ять.
+	// Р’С–РґРѕР±СЂР°Р·РёС‚Рё РїС–РґРїРёСЃ С– РІС–РґРєСЂРёС‚РёР№ РєР»СЋС‡ Сѓ РїР°РјвЂ™СЏС‚СЊ.
 	fmap = CreateFileMappingW(f, NULL, PAGE_READONLY, 0, 0, NULL);
 	if (!fmap) {
 		printf("Cannot create file mapping: 0x%08X\n", GetLastError());
@@ -383,10 +383,10 @@ exit2:
 }
 
 /*
-* Аргументи:
-* /g <шлях> — згенерувати пару ключів як <шлях>.sk4145 та <шлях>.pk4145
-* /s <шлях_1> <шлях_2> — підписати файл <шлях_1> особистим ключем <шлях_2>
-* /v <шлях_1> — перевірити підпис, що знаходиться в <шлях_1>
+* РђСЂРіСѓРјРµРЅС‚Рё:
+* /g <С€Р»СЏС…> вЂ” Р·РіРµРЅРµСЂСѓРІР°С‚Рё РїР°СЂСѓ РєР»СЋС‡С–РІ СЏРє <С€Р»СЏС…>.sk4145 С‚Р° <С€Р»СЏС…>.pk4145
+* /s <С€Р»СЏС…_1> <С€Р»СЏС…_2> вЂ” РїС–РґРїРёСЃР°С‚Рё С„Р°Р№Р» <С€Р»СЏС…_1> РѕСЃРѕР±РёСЃС‚РёРј РєР»СЋС‡РµРј <С€Р»СЏС…_2>
+* /v <С€Р»СЏС…_1> вЂ” РїРµСЂРµРІС–СЂРёС‚Рё РїС–РґРїРёСЃ, С‰Рѕ Р·РЅР°С…РѕРґРёС‚СЊСЃСЏ РІ <С€Р»СЏС…_1>
 */
 
 int wmain(int argc, wchar_t** argv) {

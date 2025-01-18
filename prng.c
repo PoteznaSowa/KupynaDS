@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * Copyright (c) 2016 PrivatBank IT <acsk@privatbank.ua>. All rights reserved.
  * Redistribution and modifications are permitted subject to BSD license.
  */
@@ -106,20 +106,22 @@ int prng_next_bytes(PrngCtx *prng, ByteArray *buf)
 	CHECK_PARAM(prng != NULL);
 	CHECK_PARAM(buf != NULL);
 
-	// Ç÷èòàòè âèïàäêîâ³ áàéòè ç ÃÂ× îïåðàö³éíî¿ ñèñòåìè
+	// Ð—Ñ‡Ð¸Ñ‚Ð°Ñ‚Ð¸ Ð²Ð¸Ð¿Ð°Ð´ÐºÐ¾Ð²Ñ– Ð±Ð°Ð¹Ñ‚Ð¸ Ð· Ð“Ð’Ð§ Ð¾Ð¿ÐµÑ€Ð°Ñ†Ñ–Ð¹Ð½Ð¾Ñ— ÑÐ¸ÑÑ‚ÐµÐ¼Ð¸
 #ifdef _WIN32
-	DWORD r;
-	BOOL r2 = DeviceIoControl(
+	IO_STATUS_BLOCK iosb;
+	NTSTATUS status = NtDeviceIoControlFile(
 		prng->dev,
+		NULL,
+		NULL,
+		NULL,
+		&iosb,
 		IOCTL_KSEC_RNG,
 		NULL,
 		0,
 		buf->buf,
-		buf->len,
-		&r,
-		NULL
+		buf->len
 	);
-	if (!r2) {
+	if (NT_ERROR(status)) {
 		SET_ERROR(RET_FILE_READ_ERROR);
 	}
 #else   // Linux
@@ -137,7 +139,7 @@ void prng_free(PrngCtx *prng)
 {
 	if (prng != NULL) {
 #ifdef _WIN32
-		CloseHandle(prng->dev);
+		NtClose(prng->dev);
 #endif
 		free(prng);
 	}
