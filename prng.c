@@ -44,13 +44,12 @@ PrngCtx *prng_alloc(PrngMode mode, const ByteArray *seed)
 	CALLOC_CHECKED(ctx, sizeof(PrngCtx));
 
 #ifdef _WIN32
-	IO_STATUS_BLOCK iosb;
 	UNICODE_STRING path = RTL_CONSTANT_STRING(L"\\Device\\CNG");
 	OBJECT_ATTRIBUTES oa;
-	NTSTATUS status;
+	IO_STATUS_BLOCK iosb;
 
 	InitializeObjectAttributes(&oa, &path, 0, NULL, NULL);
-	status = NtOpenFile(
+	NTSTATUS status = NtOpenFile(
 		&(ctx->dev),
 		FILE_READ_DATA,
 		&oa,
@@ -125,7 +124,7 @@ int prng_next_bytes(PrngCtx *prng, ByteArray *buf)
 		SET_ERROR(RET_FILE_READ_ERROR);
 	}
 #else   // Linux
-	if (getrandom(buf->buf, buf->len, 0) == -1) {
+	if (getrandom(buf->buf, buf->len, GRND_RANDOM) == -1) {
 		SET_ERROR(RET_FILE_READ_ERROR);
 	}
 #endif
