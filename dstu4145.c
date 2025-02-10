@@ -33,7 +33,6 @@ static int public_key_to_ec_point(Dstu4145ParamsCtx *params, const ByteArray *qx
 	wa_change_len(x, params->ec2m->len);
 	wa_change_len(y, params->ec2m->len);
 
-	/* Координаты точки принадлежат основному полю. */
 	if (int_bit_len(x) > params->m) {
 		SET_ERROR(RET_INVALID_PUBLIC_KEY);
 	}
