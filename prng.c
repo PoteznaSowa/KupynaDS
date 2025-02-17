@@ -107,6 +107,8 @@ int prng_next_bytes(PrngCtx *prng, ByteArray *buf)
 
 	// Зчитати випадкові байти з ГВЧ операційної системи
 #ifdef _WIN32
+	ULONG length = buf->len;
+	ULONG ioctl = length < 16384 ? IOCTL_KSEC_RNG : IOCTL_KSEC_RNG_REKEY;
 	IO_STATUS_BLOCK iosb;
 	NTSTATUS status = NtDeviceIoControlFile(
 		prng->dev,
@@ -114,11 +116,11 @@ int prng_next_bytes(PrngCtx *prng, ByteArray *buf)
 		NULL,
 		NULL,
 		&iosb,
-		IOCTL_KSEC_RNG,
+		ioctl,
 		NULL,
-		0,
+		length,
 		buf->buf,
-		buf->len
+		length
 	);
 	if (NT_ERROR(status)) {
 		SET_ERROR(RET_FILE_READ_ERROR);
